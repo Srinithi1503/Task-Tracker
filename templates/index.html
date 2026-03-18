@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Tracker - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Task Tracker</h1>
+        <div class="user-controls">
+            <label class="dark-mode-label">
+                🌙 <input type="checkbox" id="darkToggle"> Dark Mode
+            </label>
+            <span>Hello, {{ username }} | <a href="{{ url_for('logout') }}">Logout 🔒</a></span>
+        </div>
+    </header>
+
+    <!-- Add Task Form -->
+    <form method="POST" class="add-task-form">
+        <input type="text" name="title" placeholder="Task Title" required>
+        <input type="text" name="description" placeholder="Description">
+        <input type="date" name="deadline" required>
+        <select name="priority">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
+        <button type="submit">Add Task</button>
+    </form>
+
+    <!-- Filter & Search -->
+    <div class="filter-search">
+        <div class="filter">
+            <a href="/?filter=All">All</a>
+            <a href="/?filter=Pending">Pending</a>
+            <a href="/?filter=Completed">Completed</a>
+        </div>
+        <form method="GET" class="search">
+            <input type="text" name="search" placeholder="Search Task" value="{{ search }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <!-- Task Cards -->
+    <div class="task-cards">
+        {% for task in tasks %}
+        <div class="task-card">
+            <div class="card-header">
+                <h3>{{ task[2] }}</h3>
+                <span class="priority {{ task[5]|lower }}">{{ task[5] }}</span>
+            </div>
+            <p>{{ task[3] }}</p>
+            <p>Due: <strong>{{ task[4] }}</strong></p>
+            <div class="card-footer">
+                <a class="status-btn" href="/update_status/{{ task[0] }}">{{ task[6] }}</a>
+                <div class="actions">
+                    <a href="/edit/{{ task[0] }}">Edit ✏️</a> | 
+                    <a class="delete-btn" href="/delete/{{ task[0] }}">Delete ❌</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="toast">{{ msg }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
